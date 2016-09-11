@@ -20,6 +20,7 @@ class GameScene: SKScene {
     var ghost = SKSpriteNode()
     
     override func didMoveToView(view: SKView) {
+        
         /* Setup your scene here */
         
         ground = SKSpriteNode(imageNamed: "Ground")
@@ -27,10 +28,16 @@ class GameScene: SKScene {
         ground.position = CGPoint(x: self.frame.width / 2, y: 0 + ground.frame.height / 2)
         
         ground.physicsBody = SKPhysicsBody(rectangleOfSize: ground.size)
+        // Sets which category the ground physics body belongs to
         ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
+        
+        // Tells ground that the ghost physics category can collide with it
         ground.physicsBody?.collisionBitMask = PhysicsCategory.Ghost
+        
+        // Sends a notification if the ghost physics body hits the ground
         ground.physicsBody?.contactTestBitMask = PhysicsCategory.Ghost
         ground.physicsBody?.affectedByGravity = false
+        // Does not move when hit
         ground.physicsBody?.dynamic = false
         
         // Ground appears infront of everything
@@ -66,6 +73,7 @@ class GameScene: SKScene {
         
     }
     
+    // Sets up Walls
     func createWalls() {
         
         let wallPair = SKNode()
