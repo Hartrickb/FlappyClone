@@ -138,6 +138,9 @@ class GameScene: SKScene {
         // Sets walls to be behind the ground
         wallPair.zPosition = 1
         
+        let randomPosition = CGFloat.randomNumber(min: -100, max: 100)
+        wallPair.position.y = wallPair.position.y + randomPosition
+        
         wallPair.runAction(moveAndRemove)
         
         self.addChild(wallPair)
