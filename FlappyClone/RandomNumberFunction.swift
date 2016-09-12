@@ -19,7 +19,7 @@ public extension CGFloat {
     
     public static func randomNumber(min min: CGFloat, max: CGFloat) -> CGFloat {
         
-        return CGFloat.randomNumber() * (min - max) + min
+        return CGFloat.randomNumber() * (max - min) + min
         
     }
     

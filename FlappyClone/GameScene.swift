@@ -110,8 +110,8 @@ class GameScene: SKScene {
         let topWall = SKSpriteNode(imageNamed: "Wall")
         let bottomWall = SKSpriteNode(imageNamed: "Wall")
         
-        topWall.position = CGPoint(x: self.frame.width, y: self.frame.height / 2 + 350)
-        bottomWall.position = CGPoint(x: self.frame.width, y: self.frame.height / 2 - 350)
+        topWall.position = CGPoint(x: self.frame.width + 25, y: self.frame.height / 2 + 350)
+        bottomWall.position = CGPoint(x: self.frame.width + 25, y: self.frame.height / 2 - 350)
         
         topWall.setScale(0.5)
         bottomWall.setScale(0.5)
@@ -138,7 +138,7 @@ class GameScene: SKScene {
         // Sets walls to be behind the ground
         wallPair.zPosition = 1
         
-        let randomPosition = CGFloat.randomNumber(min: -100, max: 100)
+        let randomPosition = CGFloat.randomNumber(min: -200, max: 200)
         wallPair.position.y = wallPair.position.y + randomPosition
         
         wallPair.runAction(moveAndRemove)
