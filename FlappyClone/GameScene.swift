@@ -12,9 +12,10 @@ struct PhysicsCategory {
     static let Ghost: UInt32 = 0x1 << 1
     static let Ground: UInt32 = 0x1 << 2
     static let Wall: UInt32 = 0x1 << 3
+    static let Score: UInt32 = 0x1 << 4
 }
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var ground = SKSpriteNode()
     var ghost = SKSpriteNode()
@@ -24,9 +25,13 @@ class GameScene: SKScene {
     
     var gameStarted = Bool()
     
+    var score = Int()
+    
     override func didMoveToView(view: SKView) {
         
         /* Setup your scene here */
+        
+        self.physicsWorld.contactDelegate = self
         
         ground = SKSpriteNode(imageNamed: "Ground")
         ground.setScale(0.5)
@@ -57,7 +62,7 @@ class GameScene: SKScene {
         ghost.physicsBody = SKPhysicsBody(circleOfRadius: ghost.frame.height / 2)
         ghost.physicsBody?.categoryBitMask = PhysicsCategory.Ghost
         ghost.physicsBody?.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
-        ghost.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
+        ghost.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall | PhysicsCategory.Score
         ghost.physicsBody?.affectedByGravity = false
         ghost.physicsBody?.dynamic = true
         
@@ -65,6 +70,18 @@ class GameScene: SKScene {
         ghost.zPosition = 2
         
         self.addChild(ghost)
+        
+    }
+    
+    func didBeginContact(contact: SKPhysicsContact) {
+        
+        let firstBody = contact.bodyA
+        let secondBody = contact.bodyB
+        
+        if firstBody.categoryBitMask == PhysicsCategory.Score && secondBody.categoryBitMask == PhysicsCategory.Ghost || firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Score {
+            score += 1
+            print(score)
+        }
         
     }
     
@@ -76,6 +93,7 @@ class GameScene: SKScene {
             gameStarted = true
             ghost.physicsBody?.affectedByGravity = true
             
+            // Creates walls with a two second delay between them
             let spawn = SKAction.runBlock {
                 self.createWalls()
             }
@@ -85,6 +103,7 @@ class GameScene: SKScene {
             let spawnDelayForever = SKAction.repeatActionForever(spawnDelay)
             self.runAction(spawnDelayForever)
             
+            // Moves walls from right to left
             let distance = CGFloat(self.frame.width + wallPair.frame.width)
             let movePipes = SKAction.moveByX(-distance, y: 0, duration: NSTimeInterval(0.008 * distance))
             let removePipes = SKAction.removeFromParent()
@@ -98,12 +117,20 @@ class GameScene: SKScene {
             ghost.physicsBody?.applyImpulse(CGVectorMake(0, 90))
         }
         
-        
-        
     }
     
     // Sets up Walls
     func createWalls() {
+        
+        let scoreNode = SKSpriteNode()
+        scoreNode.size = CGSize(width: 1, height: 200)
+        scoreNode.position = CGPoint(x: self.frame.width, y: self.frame.height / 2)
+        scoreNode.physicsBody = SKPhysicsBody(rectangleOfSize: scoreNode.size)
+        scoreNode.physicsBody?.affectedByGravity = false
+        scoreNode.physicsBody?.dynamic = false
+        scoreNode.physicsBody?.categoryBitMask = PhysicsCategory.Score
+        scoreNode.physicsBody?.collisionBitMask = 0
+        scoreNode.physicsBody?.contactTestBitMask = PhysicsCategory.Ghost
         
         wallPair = SKNode()
         
@@ -140,6 +167,7 @@ class GameScene: SKScene {
         
         let randomPosition = CGFloat.randomNumber(min: -200, max: 200)
         wallPair.position.y = wallPair.position.y + randomPosition
+        wallPair.addChild(scoreNode)
         
         wallPair.runAction(moveAndRemove)
         
