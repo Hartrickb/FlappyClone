@@ -18,6 +18,11 @@ class GameScene: SKScene {
     
     var ground = SKSpriteNode()
     var ghost = SKSpriteNode()
+    var wallPair = SKNode()
+    
+    var moveAndRemove = SKAction()
+    
+    var gameStarted = Bool()
     
     override func didMoveToView(view: SKView) {
         
@@ -53,7 +58,7 @@ class GameScene: SKScene {
         ghost.physicsBody?.categoryBitMask = PhysicsCategory.Ghost
         ghost.physicsBody?.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
         ghost.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
-        ghost.physicsBody?.affectedByGravity = true
+        ghost.physicsBody?.affectedByGravity = false
         ghost.physicsBody?.dynamic = true
         
         // Ghost appears in front of the wall but behind the ground
@@ -61,22 +66,47 @@ class GameScene: SKScene {
         
         self.addChild(ghost)
         
-        createWalls()
-        
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
         
-        ghost.physicsBody?.velocity = CGVectorMake(0, 0)
-        ghost.physicsBody?.applyImpulse(CGVectorMake(0, 90))
+        if gameStarted == false {
+            
+            gameStarted = true
+            ghost.physicsBody?.affectedByGravity = true
+            
+            let spawn = SKAction.runBlock {
+                self.createWalls()
+            }
+            
+            let delay = SKAction.waitForDuration(2.0)
+            let spawnDelay = SKAction.sequence([spawn, delay])
+            let spawnDelayForever = SKAction.repeatActionForever(spawnDelay)
+            self.runAction(spawnDelayForever)
+            
+            let distance = CGFloat(self.frame.width + wallPair.frame.width)
+            let movePipes = SKAction.moveByX(-distance, y: 0, duration: NSTimeInterval(0.008 * distance))
+            let removePipes = SKAction.removeFromParent()
+            moveAndRemove = SKAction.sequence([movePipes, removePipes])
+            
+            ghost.physicsBody?.velocity = CGVectorMake(0, 0)
+            ghost.physicsBody?.applyImpulse(CGVectorMake(0, 90))
+            
+        } else {
+            ghost.physicsBody?.velocity = CGVectorMake(0, 0)
+            ghost.physicsBody?.applyImpulse(CGVectorMake(0, 90))
+        }
+        
+        
         
     }
     
     // Sets up Walls
     func createWalls() {
         
-        let wallPair = SKNode()
+        wallPair = SKNode()
+        
         let topWall = SKSpriteNode(imageNamed: "Wall")
         let bottomWall = SKSpriteNode(imageNamed: "Wall")
         
@@ -107,6 +137,8 @@ class GameScene: SKScene {
         
         // Sets walls to be behind the ground
         wallPair.zPosition = 1
+        
+        wallPair.runAction(moveAndRemove)
         
         self.addChild(wallPair)
         
