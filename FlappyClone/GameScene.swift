@@ -26,12 +26,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var gameStarted = Bool()
     
     var score = Int()
+    let scoreLabel = SKLabelNode()
     
     override func didMoveToView(view: SKView) {
         
         /* Setup your scene here */
         
         self.physicsWorld.contactDelegate = self
+        
+        scoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2 + self.frame.height / 2.5)
+        scoreLabel.text = "\(score)"
+        scoreLabel.zPosition = 4
+        self.addChild(scoreLabel)
         
         ground = SKSpriteNode(imageNamed: "Ground")
         ground.setScale(0.5)
@@ -80,7 +86,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if firstBody.categoryBitMask == PhysicsCategory.Score && secondBody.categoryBitMask == PhysicsCategory.Ghost || firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Score {
             score += 1
-            print(score)
+            scoreLabel.text = "\(score)"
         }
         
     }
@@ -124,13 +130,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let scoreNode = SKSpriteNode()
         scoreNode.size = CGSize(width: 1, height: 200)
-        scoreNode.position = CGPoint(x: self.frame.width, y: self.frame.height / 2)
+        scoreNode.position = CGPoint(x: self.frame.width + 25, y: self.frame.height / 2)
         scoreNode.physicsBody = SKPhysicsBody(rectangleOfSize: scoreNode.size)
         scoreNode.physicsBody?.affectedByGravity = false
         scoreNode.physicsBody?.dynamic = false
         scoreNode.physicsBody?.categoryBitMask = PhysicsCategory.Score
         scoreNode.physicsBody?.collisionBitMask = 0
         scoreNode.physicsBody?.contactTestBitMask = PhysicsCategory.Ghost
+        scoreNode.color = UIColor.blueColor()
         
         wallPair = SKNode()
         
