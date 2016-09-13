@@ -46,6 +46,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.physicsWorld.contactDelegate = self
         
+        for i in 0..<2 {
+            
+            let background = SKSpriteNode(imageNamed: "Background")
+            background.anchorPoint = CGPointZero
+            background.position = CGPointMake(CGFloat(i) * self.frame.width, 0)
+            background.name = "background"
+            background.size = self.view!.bounds.size
+            self.addChild(background)
+            
+        }
+        
         scoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2 + self.frame.height / 2.5)
         scoreLabel.text = "\(score)"
         scoreLabel.fontName = "04b_19"
@@ -106,13 +117,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let firstBody = contact.bodyA
         let secondBody = contact.bodyB
         
-        if firstBody.categoryBitMask == PhysicsCategory.Score && secondBody.categoryBitMask == PhysicsCategory.Ghost || firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Score {
+        // Enumerates score and deletes coins after touched
+        if firstBody.categoryBitMask == PhysicsCategory.Score && secondBody.categoryBitMask == PhysicsCategory.Ghost {
+            
             score += 1
             scoreLabel.text = "\(score)"
+            firstBody.node?.removeFromParent()
+            
+        } else if firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Score {
+            
+            score += 1
+            scoreLabel.text = "\(score)"
+            secondBody.node?.removeFromParent()
         }
         
+        // Called if ghost hits a wall
         if firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Wall || firstBody.categoryBitMask == PhysicsCategory.Wall && secondBody.categoryBitMask == PhysicsCategory.Ghost {
             
+            // Makes walls stop moving if hit
+            enumerateChildNodesWithName("wallPair", usingBlock: { (node, error) in
+                node.speed = 0
+                self.removeAllActions()
+            })
+            
+            if died == false {
+                died = true
+                createButton()
+            }
+        }
+        
+        // Called if ghost hits the ground
+        if firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Ground || firstBody.categoryBitMask == PhysicsCategory.Ground && secondBody.categoryBitMask == PhysicsCategory.Ghost {
+            
+            // Makes walls stop moving if hit
             enumerateChildNodesWithName("wallPair", usingBlock: { (node, error) in
                 node.speed = 0
                 self.removeAllActions()
@@ -126,6 +163,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    // Creates the restartButton
     func createButton() {
         restartButton = SKSpriteNode(imageNamed: "RestartButton")
         restartButton.size = CGSizeMake(200, 100)
@@ -157,7 +195,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // Moves walls from right to left
             let distance = CGFloat(self.frame.width + wallPair.frame.width)
-            let movePipes = SKAction.moveByX(-distance, y: 0, duration: NSTimeInterval(0.008 * distance))
+            let movePipes = SKAction.moveByX(-distance - 50, y: 0, duration: NSTimeInterval(0.008 * distance))
             let removePipes = SKAction.removeFromParent()
             moveAndRemove = SKAction.sequence([movePipes, removePipes])
             
@@ -177,6 +215,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for touch in touches {
             let location = touch.locationInNode(self)
             
+            // Dectects if touch is inside the restartButton to restart game
             if died == true {
                 if restartButton.containsPoint(location) {
                     restartScene()
@@ -190,8 +229,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Sets up Walls
     func createWalls() {
         
-        let scoreNode = SKSpriteNode()
-        scoreNode.size = CGSize(width: 1, height: 200)
+        let scoreNode = SKSpriteNode(imageNamed: "Coin")
+        scoreNode.size = CGSize(width: 50, height: 50)
         scoreNode.position = CGPoint(x: self.frame.width + 25, y: self.frame.height / 2)
         scoreNode.physicsBody = SKPhysicsBody(rectangleOfSize: scoreNode.size)
         scoreNode.physicsBody?.affectedByGravity = false
@@ -227,6 +266,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bottomWall.physicsBody?.dynamic = false
         bottomWall.physicsBody?.affectedByGravity = false
         
+        // Rotates the topwall image 180 degrees
         topWall.zRotation = CGFloat(M_PI)
         
         wallPair.addChild(topWall)
@@ -247,5 +287,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        
+        if gameStarted == true {
+            if died == false {
+                
+                enumerateChildNodesWithName("background", usingBlock: { (node, error) in
+                    
+                    let background = node as! SKSpriteNode
+                    background.position = CGPoint(x: background.position.x - 2, y: background.position.y)
+                    
+                    if background.position.x <= -background.size.width {
+                        background.position = CGPointMake(background.position.x + background.size.width * 2, background.position.y)
+                    }
+                    
+                })
+                
+            }
+        }
+        
     }
 }
