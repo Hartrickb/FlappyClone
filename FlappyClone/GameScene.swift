@@ -27,10 +27,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var score = Int()
     let scoreLabel = SKLabelNode()
+    var restartButton = SKSpriteNode()
     
-    override func didMoveToView(view: SKView) {
+    var died = Bool()
+    
+    func restartScene() {
         
-        /* Setup your scene here */
+        self.removeAllChildren()
+        self.removeAllActions()
+        died = false
+        gameStarted = false
+        score = 0
+        createScene()
+        
+    }
+    
+    func createScene() {
         
         self.physicsWorld.contactDelegate = self
         
@@ -79,6 +91,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    override func didMoveToView(view: SKView) {
+        
+        /* Setup your scene here */
+        
+        createScene()
+        
+    }
+    
     func didBeginContact(contact: SKPhysicsContact) {
         
         let firstBody = contact.bodyA
@@ -89,6 +109,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreLabel.text = "\(score)"
         }
         
+        if firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Wall || firstBody.categoryBitMask == PhysicsCategory.Wall && secondBody.categoryBitMask == PhysicsCategory.Ghost {
+            
+            died = true
+            createButton()
+            
+        }
+        
+    }
+    
+    func createButton() {
+        restartButton = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 200, height: 100))
+        restartButton.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2)
+        restartButton.zPosition = 5
+        self.addChild(restartButton)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -119,8 +153,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ghost.physicsBody?.applyImpulse(CGVectorMake(0, 90))
             
         } else {
-            ghost.physicsBody?.velocity = CGVectorMake(0, 0)
-            ghost.physicsBody?.applyImpulse(CGVectorMake(0, 90))
+            
+            if died == true {
+                
+            } else {
+                ghost.physicsBody?.velocity = CGVectorMake(0, 0)
+                ghost.physicsBody?.applyImpulse(CGVectorMake(0, 90))
+            }
+        }
+        
+        for touch in touches {
+            let location = touch.locationInNode(self)
+            
+            if died == true {
+                if restartButton.containsPoint(location) {
+                    restartScene()
+                }
+                
+            }
         }
         
     }
