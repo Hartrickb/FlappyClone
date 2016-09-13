@@ -48,6 +48,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         scoreLabel.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2 + self.frame.height / 2.5)
         scoreLabel.text = "\(score)"
+        scoreLabel.fontName = "04b_19"
+        scoreLabel.fontSize = 60
         scoreLabel.zPosition = 4
         self.addChild(scoreLabel)
         
@@ -111,18 +113,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if firstBody.categoryBitMask == PhysicsCategory.Ghost && secondBody.categoryBitMask == PhysicsCategory.Wall || firstBody.categoryBitMask == PhysicsCategory.Wall && secondBody.categoryBitMask == PhysicsCategory.Ghost {
             
-            died = true
-            createButton()
+            enumerateChildNodesWithName("wallPair", usingBlock: { (node, error) in
+                node.speed = 0
+                self.removeAllActions()
+            })
             
+            if died == false {
+                died = true
+                createButton()
+            }
         }
         
     }
     
     func createButton() {
-        restartButton = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 200, height: 100))
+        restartButton = SKSpriteNode(imageNamed: "RestartButton")
+        restartButton.size = CGSizeMake(200, 100)
         restartButton.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2)
         restartButton.zPosition = 5
+        restartButton.setScale(0)
         self.addChild(restartButton)
+        
+        restartButton.runAction(SKAction.scaleTo(1.0, duration: 0.4))
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -190,6 +202,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreNode.color = UIColor.blueColor()
         
         wallPair = SKNode()
+        wallPair.name = "wallPair"
         
         let topWall = SKSpriteNode(imageNamed: "Wall")
         let bottomWall = SKSpriteNode(imageNamed: "Wall")

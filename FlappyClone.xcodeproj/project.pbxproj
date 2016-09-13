@@ -15,6 +15,7 @@
 		912DEFE61D833D3A004AF65E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 912DEFE51D833D3A004AF65E /* Assets.xcassets */; };
 		912DEFE91D833D3A004AF65E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 912DEFE71D833D3A004AF65E /* LaunchScreen.storyboard */; };
 		912DEFF11D865C58004AF65E /* RandomNumberFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912DEFF01D865C58004AF65E /* RandomNumberFunction.swift */; };
+		91FF6D131D884B9200EEFB45 /* 04B_19__.TTF in Resources */ = {isa = PBXBuildFile; fileRef = 91FF6D121D884B9200EEFB45 /* 04B_19__.TTF */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		912DEFE81D833D3A004AF65E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		912DEFEA1D833D3A004AF65E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		912DEFF01D865C58004AF65E /* RandomNumberFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RandomNumberFunction.swift; sourceTree = "<group>"; };
+		91FF6D121D884B9200EEFB45 /* 04B_19__.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = 04B_19__.TTF; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 		912DEFD91D833D3A004AF65E /* FlappyClone */ = {
 			isa = PBXGroup;
 			children = (
+				91FF6D121D884B9200EEFB45 /* 04B_19__.TTF */,
 				912DEFDA1D833D3A004AF65E /* AppDelegate.swift */,
 				912DEFDC1D833D3A004AF65E /* GameScene.sks */,
 				912DEFDE1D833D3A004AF65E /* GameScene.swift */,
@@ -134,6 +137,7 @@
 			files = (
 				912DEFDD1D833D3A004AF65E /* GameScene.sks in Resources */,
 				912DEFE91D833D3A004AF65E /* LaunchScreen.storyboard in Resources */,
+				91FF6D131D884B9200EEFB45 /* 04B_19__.TTF in Resources */,
 				912DEFE61D833D3A004AF65E /* Assets.xcassets in Resources */,
 				912DEFE41D833D3A004AF65E /* Main.storyboard in Resources */,
 			);
